@@ -6,19 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
 
-const allowedOrigins = ['https://684abf0ba1044910a0fa36f1--beautiful-haupia-be3975.netlify.app']; // Your Netlify site
-
-const app = express();
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+app.use(cors());
 
 app.use(express.json());
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
