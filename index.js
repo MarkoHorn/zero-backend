@@ -1,15 +1,29 @@
 // index.js
 require('dotenv').config();
 console.log('🔑 OPENAI_API_KEY loaded:', !!process.env.OPENAI_API_KEY);
+
 const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
+
+const allowedOrigins = ['https://684ab7c---beautiful-haupia-be3975.netlify.app']; // Your Netlify site
+
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(express.json());
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// This is the endpoint your front-end will call
+// Assistant endpoint
 app.post('/assistant', async (req, res) => {
   const { systemPrompt, userInput } = req.body;
   try {
@@ -29,8 +43,6 @@ app.post('/assistant', async (req, res) => {
   }
 });
 
-// Start the server
-const port = process.env.PORT || 3001;
 // 🔴 RED FLAG ENDPOINT
 app.post('/flags', async (req, res) => {
   const { timestamp, userMessage, flagType } = req.body;
@@ -48,6 +60,8 @@ app.post('/flags', async (req, res) => {
   res.status(200).json({ success: true });
 });
 
+// Start the server
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`✅ Server running on port ${port}`);
 });
