@@ -6,7 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
 
-const allowedOrigins = ['https://684ab7c---beautiful-haupia-be3975.netlify.app']; // Your Netlify site
+const allowedOrigins = ['https://684abf0ba1044910a0fa36f1--beautiful-haupia-be3975.netlify.app']; // Your Netlify site
 
 const app = express();
 
