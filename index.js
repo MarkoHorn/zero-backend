@@ -6,28 +6,43 @@ const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
 
-app.use(cors());
+const app = express(); // ✅ You were missing this
 
+app.use(cors());
 app.use(express.json());
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Assistant endpoint
 app.post('/assistant', async (req, res) => {
-  const { systemPrompt, userInput } = req.body;
   try {
+    const { systemPrompt, userInput } = req.body;
+
+    if (!systemPrompt || !userInput) {
+      return res.status(400).json({ error: 'Missing systemPrompt or userInput' });
+    }
+
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       temperature: 0.85,
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user',   content: userInput  },
-      ],
+        { role: 'user', content: userInput }
+      ]
     });
-    const text = response.choices[0].message.content;
-    res.json({ text });
+
+    const reply = response?.choices?.[0]?.message?.content?.trim() || '[No reply from GPT]';
+
+    res.json({ reply });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'OpenAI request failed' });
+    if (err.response?.data) {
+      console.error('🛑 OpenAI API Error:', JSON.stringify(err.response.data, null, 2));
+    } else {
+      console.error('🛑 Unknown Server Error:', err.message || err);
+    }
+
+    res.status(500).json({ error: 'Internal server error. Please try again later.' });
   }
 });
 
