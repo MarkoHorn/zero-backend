@@ -31,6 +31,23 @@ app.post('/assistant', async (req, res) => {
 
 // Start the server
 const port = process.env.PORT || 3001;
+// 🔴 RED FLAG ENDPOINT
+app.post('/flags', async (req, res) => {
+  const { timestamp, userMessage, flagType } = req.body;
+
+  if (!timestamp || !userMessage || !flagType) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  console.log("🔴 RED FLAG CAPTURED:");
+  console.log("Time:", new Date(timestamp).toISOString());
+  console.log("Message:", userMessage);
+  console.log("Flag Type:", flagType);
+
+  // Future: save to database or file
+  res.status(200).json({ success: true });
+});
+
 app.listen(port, () => {
   console.log(`✅ Server running on port ${port}`);
 });
