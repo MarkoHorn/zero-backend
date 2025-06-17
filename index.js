@@ -78,5 +78,5 @@ res.status(200).json({ success: true });
 // Start the server
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
-  console.log(`✅ Server running on port ${port}`);
+  console.log(`✅ Server is now running on port ${port}`);
 });
