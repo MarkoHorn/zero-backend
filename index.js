@@ -1,5 +1,6 @@
 // index.js
 require('dotenv').config();
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 console.log('🔑 OPENAI_API_KEY loaded:', !!process.env.OPENAI_API_KEY);
 
 const express = require('express');
@@ -59,8 +60,19 @@ app.post('/flags', async (req, res) => {
   console.log("Message:", userMessage);
   console.log("Flag Type:", flagType);
 
-  // Future: save to database or file
-  res.status(200).json({ success: true });
+// 🔁 Log to Google Sheets
+fetch("https://script.google.com/macros/s/AKfycbz4otnQfmIgc-QDNUEqmzabKT-lPXxw2zsX2OFe2tIPxfCwK4xQ4Fv8krR0EblhW6cn/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    message: userMessage,
+    flagType,
+    ip: req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown"
+  })
+});
+
+// ✅ Done
+res.status(200).json({ success: true });
 });
 
 // Start the server
